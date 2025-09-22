@@ -4,20 +4,43 @@
 import PackageDescription
 
 let package = Package(
-    name: "RTEditor",
+    name: "RichTextEditor",
+    defaultLocalization: "en",
+    platforms: [
+        .iOS(.v17)
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "RTEditor",
-            targets: ["RTEditor"]
-        ),
+            name: "RichTextEditor",
+            targets: ["RichTextEditor",
+                      "ZSSTextView",
+                      "InfomaniakRichHTMLEditor"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "RTEditor"
+            name: "ZSSTextView",
+            path: "Sources/ZSSTextView"
         ),
-
+        .target(
+            name: "InfomaniakRichHTMLEditor",
+            path: "Sources/InfomaniakRichHTMLEditor",
+            resources: [
+                .process("Resources/")
+            ]
+        ),
+        .target(
+            name: "RichTextEditor",
+            dependencies: [
+                "ZSSTextView",
+                "InfomaniakRichHTMLEditor"
+            ],
+            path: "Sources/RichTextEditor",
+            resources: [
+                .process("Resources/")
+            ]
+        )
     ]
 )
