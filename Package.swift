@@ -7,7 +7,7 @@ let package = Package(
     name: "RichTextEditor",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v17)
+        .iOS(.v16), .macOS(.v13) // 👈 tell SPM this package requires iOS 16+
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.

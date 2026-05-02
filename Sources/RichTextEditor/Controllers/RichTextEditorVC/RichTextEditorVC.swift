@@ -37,8 +37,8 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
 
     var toolbarCurrentColorPicker: ToolbarAction?
     
-    var doneBarButtonItem: UIBarButtonItem!
-    var cancelBarButtonItem: UIBarButtonItem!
+    public var doneBarButtonItem: UIBarButtonItem!
+    public var cancelBarButtonItem: UIBarButtonItem!
 
     // MARK: - create toolbar views
 
@@ -149,10 +149,8 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("This class does not support NSCoder")
-    }
-    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -162,7 +160,7 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         registerKeyboardNotifications()
     }
     
@@ -174,13 +172,13 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
         }
     }
 
-    @objc func cancelAction() {
-        
+    @objc public func cancelAction() {
+
         view.snapshotView(afterScreenUpdates: true)
         navigationController?.popViewController(animated: true)
     }
-    
-    @objc func doneAction() {
+
+    @objc public func doneAction() {
 
         // make sure the notification happens on the main thread
         DispatchQueue.main.async {
