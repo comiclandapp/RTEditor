@@ -20,14 +20,14 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
     
     public var okLocalizedText = "OK"
     public var cancelLocalizedText = "Cancel"
-    public var addLocalizedText = "Add"
-    public var createLinkLocalizedText = "Create Link"
-    public var textColorLocalizedText = "Text Color"
-    public var backgroundColorLocalizedText = "Background Color"
-    public var labelOptionalLocalizedText = "Label (Optional)"
-    public var chooseFontLocalizedText = "Choose Font"
-    public var chooseFontSizeLocalizedText = "Choose Font Size"
-    public var chooseFontSizeBetweenLocalizedText = "Choose a font size between 1 and 7"
+    public var addLocalizedText = "addLocalizedText"
+    public var createLinkLocalizedText = "createLinkLocalizedText"
+    public var textColorLocalizedText = "textColorLocalizedText"
+    public var backgroundColorLocalizedText = "backgroundColorLocalizedText"
+    public var labelOptionalLocalizedText = "labelOptionalLocalizedText"
+    public var chooseFontLocalizedText = "chooseFontLocalizedText"
+    public var chooseFontSizeLocalizedText = "chooseFontSizeLocalizedText"
+    public var chooseFontSizeBetweenLocalizedText = "chooseFontSizeBetweenLocalizedText"
     
     /// color to tint the toolbar items
     public var toolbarItemTintColor: UIColor?
@@ -119,16 +119,12 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
     }()
     
     lazy var toolbarView: UIView = {
-
         let width = view.safeAreaLayoutGuide.layoutFrame.width
-
         let view = UIView(frame: CGRect(x: 0,
                                         y: 0,
                                         width: width,
                                         height: 44))
         view.backgroundColor = .systemGray6
-        // view.alpha = 0.0
-
         return view
     }()
 
