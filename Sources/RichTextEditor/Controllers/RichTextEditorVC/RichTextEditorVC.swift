@@ -18,22 +18,24 @@ import ZSSTextView
 
 public class RichTextEditorVC: UIViewController, UITextViewDelegate {
     
-    public var okLocalizedText = "OK"
-    public var cancelLocalizedText = "Cancel"
-    public var addLocalizedText = "addLocalizedText"
-    public var createLinkLocalizedText = "createLinkLocalizedText"
-    public var textColorLocalizedText = "textColorLocalizedText"
-    public var backgroundColorLocalizedText = "backgroundColorLocalizedText"
-    public var labelOptionalLocalizedText = "labelOptionalLocalizedText"
-    public var chooseFontLocalizedText = "chooseFontLocalizedText"
-    public var chooseFontSizeLocalizedText = "chooseFontSizeLocalizedText"
-    public var chooseFontSizeBetweenLocalizedText = "chooseFontSizeBetweenLocalizedText"
+    public var okLocalizedText = RichTextEditorString.ok.localized
+    public var cancelLocalizedText = RichTextEditorString.cancel.localized
+    public var addLocalizedText = RichTextEditorString.add.localized
+    public var createLinkLocalizedText = RichTextEditorString.createLink.localized
+    public var textColorLocalizedText = RichTextEditorString.textColor.localized
+    public var backgroundColorLocalizedText = RichTextEditorString.backgroundColor.localized
+    public var labelOptionalLocalizedText = RichTextEditorString.labelOptional.localized
+    public var chooseFontLocalizedText = RichTextEditorString.chooseFont.localized
+    public var chooseFontSizeLocalizedText = RichTextEditorString.chooseFontSize.localized
+    public var chooseFontSizeBetweenLocalizedText = RichTextEditorString.chooseFontSizeBetween.localized
+    public var onDone: ((String) -> Void)?
     
     /// color to tint the toolbar items
     public var toolbarItemTintColor: UIColor?
 
     var editorLoaded: Bool = false
     private var internalHTML: String?
+    var isObservingKeyboard = false
 
     var toolbarCurrentColorPicker: ToolbarAction?
     
@@ -88,7 +90,7 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
         let view = RichHTMLEditorView()
         view.translatesAutoresizingMaskIntoConstraints = false
         
-        if let cssURL = Bundle.main.url(forResource: "editor", withExtension: "css"), let css = try? String(contentsOf: cssURL) {
+        if let cssURL = Bundle.module.url(forResource: "editor", withExtension: "css"), let css = try? String(contentsOf: cssURL) {
             view.injectAdditionalCSS(css)
         }
         
@@ -159,6 +161,16 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
 
         registerKeyboardNotifications()
     }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        unregisterKeyboardNotifications()
+    }
+
+    deinit {
+        unregisterKeyboardNotifications()
+    }
     
     func setHTML() {
         
@@ -175,12 +187,13 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
     }
 
     @objc public func doneAction() {
+        let editedHTML = html
+        onDone?(editedHTML)
 
-        // make sure the notification happens on the main thread
         DispatchQueue.main.async {
             let nc = NotificationCenter.default
             nc.post(name: Notification.Name("NewInfoAvailable"),
-                    object: self.html)
+                    object: editedHTML)
         }
         
         cancelAction()
@@ -230,7 +243,7 @@ private extension RichTextEditorVC {
             style: .plain,
             target: self,
             action: #selector(self.cancelAction))
-        cancelBarButtonItem.accessibilityLabel = "Cancel"
+        cancelBarButtonItem.accessibilityLabel = cancelLocalizedText
 
         // Done button without a title, using an image, targeting doneAction
         let doneImage = UIImage(systemName: "checkmark")
@@ -239,7 +252,7 @@ private extension RichTextEditorVC {
             style: .done,
             target: self,
             action: #selector(self.doneAction))
-        doneBarButtonItem.accessibilityLabel = "Done"
+        doneBarButtonItem.accessibilityLabel = RichTextEditorString.done.localized
     }
 
     private func configureNavButtons() {
@@ -328,6 +341,7 @@ private extension RichTextEditorVC {
                      for: .normal)
         btn.tag = action.rawValue
         btn.tintColor = toolbarItemTintColor
+        btn.accessibilityLabel = action.accessibilityLabel
         btn.addTarget(self,
                       action: #selector(didTapToolbarButton),
                       for: .touchUpInside)

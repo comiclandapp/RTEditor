@@ -67,7 +67,7 @@ final class JavaScriptManager {
     }
 
     func setCaretAtBeginningOfDocument() {
-        evaluate(function: .setCaretAtEndOfDocument)
+        evaluate(function: .setCaretAtBeginningOfDocument)
     }
 
     func setCaretAtEndOfDocument() {

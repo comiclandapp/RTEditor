@@ -153,6 +153,59 @@ enum ToolbarAction: Int {
         }
     }
 
+    var accessibilityLabel: String {
+        switch self {
+            case .bold:
+                return RichTextEditorString.toolbarBold.localized
+            case .italic:
+                return RichTextEditorString.toolbarItalic.localized
+            case .underline:
+                return RichTextEditorString.toolbarUnderline.localized
+            case .strikethrough:
+                return RichTextEditorString.toolbarStrikethrough.localized
+            case .link:
+                return RichTextEditorString.toolbarLink.localized
+            case .toggleSubscript:
+                return RichTextEditorString.toolbarSubscript.localized
+            case .toggleSuperscript:
+                return RichTextEditorString.toolbarSuperscript.localized
+            case .orderedList:
+                return RichTextEditorString.toolbarOrderedList.localized
+            case .unorderedList:
+                return RichTextEditorString.toolbarUnorderedList.localized
+            case .justifyFull:
+                return RichTextEditorString.toolbarJustifyFull.localized
+            case .justifyLeft:
+                return RichTextEditorString.toolbarJustifyLeft.localized
+            case .justifyCenter:
+                return RichTextEditorString.toolbarJustifyCenter.localized
+            case .justifyRight:
+                return RichTextEditorString.toolbarJustifyRight.localized
+            case .fontName:
+                return RichTextEditorString.toolbarFontName.localized
+            case .fontSize:
+                return RichTextEditorString.toolbarFontSize.localized
+            case .foregroundColor:
+                return RichTextEditorString.toolbarForegroundColor.localized
+            case .backgroundColor:
+                return RichTextEditorString.toolbarBackgroundColor.localized
+            case .outdent:
+                return RichTextEditorString.toolbarOutdent.localized
+            case .indent:
+                return RichTextEditorString.toolbarIndent.localized
+            case .undo:
+                return RichTextEditorString.toolbarUndo.localized
+            case .redo:
+                return RichTextEditorString.toolbarRedo.localized
+            case .removeFormat:
+                return RichTextEditorString.toolbarRemoveFormat.localized
+            case .showSource:
+                return RichTextEditorString.toolbarShowSource.localized
+            case .dismissKeyboard:
+                return RichTextEditorString.toolbarDismissKeyboard.localized
+        }
+    }
+
     private func getImage (named name : String) -> UIImage? {
         if let image = UIImage(named: name, in: .module, compatibleWith: nil) {
             return image.withRenderingMode(.alwaysTemplate)
