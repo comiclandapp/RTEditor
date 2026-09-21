@@ -53,7 +53,7 @@ extension RichTextEditorVC {
                 editorView.justify(.right)
 
             case .fontName:
-                presentFontNameAlert()
+                presentFontNameAlert(sourceItem: sender)
             case .fontSize:
                 presentFontSizeAlert()
 
@@ -131,7 +131,7 @@ extension RichTextEditorVC {
             nameTextField.placeholder = self.labelOptionalLocalizedText
         }
         alertController.addTextField { urlTextField in
-            urlTextField.placeholder = "URL"
+            urlTextField.placeholder = RichTextEditorString.url.localized
             urlTextField.keyboardType = .URL
         }
 
@@ -150,7 +150,7 @@ extension RichTextEditorVC {
         present(alertController, animated: true)
     }
 
-    private func presentFontNameAlert() {
+    private func presentFontNameAlert(sourceItem: UIView) {
 
         let alertController = UIAlertController(title: chooseFontLocalizedText,
                                                 message: nil,
@@ -190,6 +190,8 @@ extension RichTextEditorVC {
         }
         alertController.addAction(UIAlertAction(title: cancelLocalizedText,
                                                 style: .cancel))
+        alertController.popoverPresentationController?.sourceView = sourceItem
+        alertController.popoverPresentationController?.sourceRect = sourceItem.bounds
 
         present(alertController, animated: true)
     }
@@ -266,43 +268,48 @@ extension RichTextEditorVC {
 
     /// Register for keyboard willHide willShow notifications
     func registerKeyboardNotifications() {
+        guard isObservingKeyboard == false else { return }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardNotification(notification:)),
                                                name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        isObservingKeyboard = true
+    }
+
+    func unregisterKeyboardNotifications() {
+        guard isObservingKeyboard else { return }
+
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIResponder.keyboardWillChangeFrameNotification,
+                                                  object: nil)
+        isObservingKeyboard = false
     }
 
     @objc func keyboardNotification(notification: NSNotification) {
 
-        if editorView.isHidden {
-            if let userInfo = notification.userInfo {
+        guard editorView.isHidden, let userInfo = notification.userInfo else { return }
+        guard let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
 
-                let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-                let duration: TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
-                let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
-                let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
-                let animationCurve: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
+        let duration = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        let curveRaw = (userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber)?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
+        let animationCurve = UIView.AnimationOptions(rawValue: curveRaw << 16)
+        let keyboardFrame = view.convert(endFrame, from: nil)
+        let keyboardOverlap = max(0, view.bounds.maxY - keyboardFrame.minY)
 
-                if (endFrame?.origin.y)! >= UIScreen.main.bounds.size.height {
-                    // hide keyboard
-
-                    sourceView.contentInset = .zero
-                }
-                else {
-                    // show keyboard
-                    let kbHeight: CGFloat = (notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)!.size.height
-                    sourceView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: kbHeight + 44, right: 0)
-                    sourceView.scrollIndicatorInsets = sourceView.contentInset
-                    let selectedRange = sourceView.selectedRange
-                    sourceView.scrollRangeToVisible(selectedRange)
-                }
-
-                UIView.animate(withDuration: duration,
-                               delay: TimeInterval(0),
-                               options: animationCurve,
-                               animations: { self.view.layoutIfNeeded() },
-                               completion: nil)
-            }
+        if keyboardOverlap <= 0 {
+            sourceView.contentInset = .zero
+            sourceView.scrollIndicatorInsets = .zero
         }
+        else {
+            sourceView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardOverlap + toolbarView.bounds.height, right: 0)
+            sourceView.scrollIndicatorInsets = sourceView.contentInset
+            sourceView.scrollRangeToVisible(sourceView.selectedRange)
+        }
+
+        UIView.animate(withDuration: duration,
+                       delay: 0,
+                       options: animationCurve,
+                       animations: { self.view.layoutIfNeeded() },
+                       completion: nil)
     }
 }
