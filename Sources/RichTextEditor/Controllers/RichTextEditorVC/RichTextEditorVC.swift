@@ -16,7 +16,7 @@ import UIKit
 import InfomaniakRichHTMLEditor
 import ZSSTextView
 
-public class RichTextEditorVC: UIViewController, UITextViewDelegate {
+open class RichTextEditorVC: UIViewController, UITextViewDelegate {
     
     public var okLocalizedText = RichTextEditorString.ok.localized
     public var cancelLocalizedText = RichTextEditorString.cancel.localized
@@ -147,29 +147,29 @@ public class RichTextEditorVC: UIViewController, UITextViewDelegate {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    public required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         
         setupInternalViews()
         activateConstraints()
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         registerKeyboardNotifications()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         unregisterKeyboardNotifications()
     }
 
     deinit {
-        unregisterKeyboardNotifications()
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setHTML() {
